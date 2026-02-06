@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MILKOTRACK</title>
+  <link rel="icon" type="image/x-icon" href="Gemini_Generated_Image_o35x14o35x14o35x-removebg-preview.png">
+
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <link rel="stylesheet" href="working.css">
+</head>
+
+<body>
+
+  <div class="layout-wrapper">
+
+    <aside class="sidebar">
+      <div>
+        <div class="logo-section">
+          <img src="Gemini_Generated_Image_o35x14o35x14o35x-removebg-preview.png" alt="Blue Milk Logo" class="logo-icon"
+            style="border: 2px solid rgb(253, 251, 251);  padding: 8px; border-radius: 15px;">
+
+        </div>
+
+
+        <div class="sidebar-map-section">
+
+          <div id="map" class="map-container"></div>
+          <div class="map-info" style="margin-top: 10px;">
+            <span class="icon-pin">📍</span>
+            <span>Live Tracking</span>
+          </div>
+          <div style="padding-top: 5px;"><img src="image.png" alt="QR Code" class="qr-image"
+              style="height: 110px; width: 100px;"></div>
+        </div>
+      </div>
+
+
+    </aside>
+
+    <main class="main-content">
+
+      <header class="topbar">
+        <div class="header-left">
+          <h4>MIL<span class="highlight">KO</span>TRACK</h4>
+          <p>Real Time IoT Based Milk Quality Profiling System</p>
+        </div>
+
+        <div class="header-right">
+          <div class="purity-widget">
+            <div class="gauge-label">QUALITY</div>
+            <div class="gauge-semicircle">
+              <svg viewBox="0 0 100 50" class="gauge-svg">
+                <path d="M 10 50 A 40 40 0 0 1 90 50" class="gauge-bg" fill="none" stroke="#E9EDF7" stroke-width="12"
+                  stroke-linecap="round" />
+                <path id="purityArc" d="M 10 50 A 40 40 0 0 1 90 50" class="gauge-fill" fill="none" stroke="#05CD99"
+                  stroke-width="12" stroke-linecap="round" stroke-dasharray="126" stroke-dashoffset="126" />
+              </svg>
+              <div class="gauge-value"><span id="purityValue">--</span>%</div>
+            </div>
+            <div class="purity-text" id="purityStatus">--</div>
+          </div>
+
+          <div class="controls-group">
+            <div id="connectionBadge" class="status-badge disconnected">
+              <span class="dot"></span> DISCONNECTED
+            </div>
+            <button id="connectBtn" class="btn-connect">Connect</button>
+          </div>
+        </div>
+      </header>
+
+      <section class="cards-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="icon-box icon-ph">🧪</div>
+            <span class="card-title">pH Level</span>
+          </div>
+          <div class="card-body">
+            <span class="value" id="ph">--</span>
+            <span class="unit">pH</span>
+          </div>
+          <div class="card-bar">
+            <div id="bar-ph" class="bar-fill fill-blue"></div>
+          </div>
+          <div class="card-footer">Acidity / Alkalinity balance</div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="icon-box icon-tds">💧</div>
+            <span class="card-title">TDS</span>
+          </div>
+          <div class="card-body">
+            <span class="value" id="tds">--</span>
+            <span class="unit">ppm</span>
+          </div>
+          <div class="card-bar">
+            <div id="bar-tds" class="bar-fill fill-blue1"></div>
+          </div>
+          <div class="card-footer">Total dissolved solids</div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="icon-box icon-temp">🌡️</div>
+            <span class="card-title">Temperature</span>
+          </div>
+          <div class="card-body">
+            <span class="value" id="temperature">--</span>
+            <span class="unit">°C</span>
+          </div>
+          <div class="card-bar">
+            <div id="bar-temp" class="bar-fill fill-orange"></div>
+          </div>
+          <div class="card-footer">Current milk temperature</div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="icon-box icon-turb">🌫️</div>
+            <span class="card-title">Turbidity</span>
+          </div>
+          <div class="card-body">
+            <span class="value" id="turbidity">--</span>
+            <span class="unit">NTU</span>
+          </div>
+          <div class="card-bar">
+            <div id="bar-turb" class="bar-fill fill-cyan"></div>
+          </div>
+          <div class="card-footer">Water clarity level</div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="icon-box icon-fat">🧀</div>
+            <span class="card-title">Milk FAT</span>
+          </div>
+          <div class="card-body">
+            <span class="value" id="fat">--</span>
+            <span class="unit">%</span>
+          </div>
+          <div class="card-bar">
+            <div id="bar-fat" class="bar-fill fill-yellow"></div>
+          </div>
+          <div class="card-footer">Butterfat content level</div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="icon-box icon-snf">🥛</div>
+            <span class="card-title">SNF</span>
+          </div>
+          <div class="card-body">
+            <span class="value" id="snf">--</span>
+            <span class="unit">%</span>
+          </div>
+          <div class="card-bar">
+            <div id="bar-snf" class="bar-fill fill-purple"></div>
+          </div>
+          <div class="card-footer">Solids-not-fat content</div>
+        </div>
+
+      </section>
+
+      <section class="bottom-grid">
+
+        <div class="large-card">
+          <h5>Quality Evaluation Engine</h5>
+          <div class="eval-grid">
+            <div class="eval-item">
+              <span class="label">pH</span>
+              <div class="status-icon" id="check-ph">--</div>
+            </div>
+            <div class="eval-item">
+              <span class="label">TDS</span>
+              <div class="status-icon" id="check-tds">--</div>
+            </div>
+            <div class="eval-item">
+              <span class="label">Temp</span>
+              <div class="status-icon" id="check-temp">--</div>
+            </div>
+            <div class="eval-item">
+              <span class="label">Turb</span>
+              <div class="status-icon" id="check-turb">--</div>
+            </div>
+            <div class="eval-item">
+              <span class="label">FAT</span>
+              <div class="status-icon" id="check-fat">--</div>
+            </div>
+            <div class="eval-item">
+              <span class="label">SNF</span>
+              <div class="status-icon" id="check-snf">--</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="large-card" id="shelfLifeCard">
+          <h5>Predicted Shelf Life</h5>
+
+          <div id="shelfLifeSafe" class="shelf-content">
+            <div class="clock-wrapper">
+              <svg class="analog-clock" viewBox="0 0 100 100">
+                <!-- Clock face -->
+                <circle cx="50" cy="50" r="48" class="clock-face" fill="white" stroke="#DBEAFE" stroke-width="2" />
+
+                <!-- Hour markers -->
+                <circle cx="50" cy="6" r="2" fill="#3B82F6" />
+                <circle cx="94" cy="50" r="2" fill="#3B82F6" />
+                <circle cx="50" cy="94" r="2" fill="#3B82F6" />
+                <circle cx="6" cy="50" r="2" fill="#3B82F6" />
+
+                <!-- Hour hand -->
+                <line x1="50" y1="50" x2="50" y2="28" class="hour-hand" stroke="#3B82F6" stroke-width="2.5"
+                  stroke-linecap="round" />
+
+                <!-- Minute hand -->
+                <line x1="50" y1="50" x2="50" y2="15" class="minute-hand" stroke="#0EA5E9" stroke-width="2"
+                  stroke-linecap="round" />
+
+                <!-- Center dot -->
+                <circle cx="50" cy="50" r="3" fill="#3B82F6" />
+              </svg>
+            </div>
+
+            <div class="time-display">
+              <span id="shelfHours">24</span> <small>hrs</small>
+              <span id="shelfMinutes">30</span> <small>min</small>
+            </div>
+            <div class="time-sub">Based on current Readings</div>
+          </div>
+
+          <div id="shelfLifeDanger" class="shelf-content hidden">
+            <div class="alert-box-inner">
+              <span class="alert-icon-inner">⚠️</span>
+              <div>
+                <strong>SPOILAGE RISK</strong>
+                <p>Shelf life compromised.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div id="alertBox" class="alert-toast hidden">
+    <div class="alert-line"></div>
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-msg">
+      <strong>CONTAMINATION DETECTED</strong>
+      <p>Milk is adulterated.</p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="working.js"></script>
+</body>
+
+</html>
